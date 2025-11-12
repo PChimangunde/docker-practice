@@ -1,0 +1,68 @@
+# Specify the Docker Compose file version
+version: "3.8"
+
+# Define all the services (containers) that make up our application
+services:
+  # ------ Nginx Service ------
+  # A web server, often used as a reverse proxy
+  nginx:
+    image: nginx:latest
+    container_name: nginx_container
+    ports:
+      # Map port 80 on the host machine to port 80 in the container
+      - "80:80"
+    volumes:
+      # Use the *named volume* 'nginx_data' and mount it to /data
+      # This persists data in /data even if the container is removed.
+      - nginx_data:/data
+    networks:
+      # Connect this service to our custom bridge network
+      - "my_network"
+    environment:
+      - NGINX_PORT=80
+
+  # ------ Alpine Service ------
+  # A minimal Linux distribution, useful for testing/utilities
+  alpine:
+    image: alpine:latest
+    container_name: alpine_container
+    # Keep the container running (alpine images exit by default)
+    command: ["tail", "-f", "/dev/null"]
+    ports:
+      - "8080:80"
+    volumes:
+      # Use the *named volume* 'alpine_data'
+      - alpine_data:/data
+    networks:
+      - "my_network"
+    environment:
+      - ALPINE_ENV=production
+      - ALPINE_PORT=8080
+
+  # ------ Redis Service ------
+  # An in-memory data store (cache, message broker)
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    ports:
+      - "6379:6379"
+    volumes:
+      # Use the *named volume* 'redis_data' to persist Redis data
+      - redis_data:/data
+    networks:
+      - "my_network"
+    environment:
+      - REDIS_PASSWORD=password
+
+# Define the named volumes used by the services above
+# Docker manages the storage for these volumes.
+volumes:
+  nginx_data:
+  alpine_data:
+  redis_data:
+
+# Define the custom network
+networks:
+  my_network:
+    # Use the 'bridge' driver (standard for single-host communication)
+    driver: bridge

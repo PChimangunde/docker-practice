@@ -1,0 +1,16 @@
+# Ignore the node_modules directory.
+# This is vital! We want 'npm install' to run *inside* the container,
+# not copy our local 'node_modules' folder.
+node_modules
+
+# Ignore local build output
+dist
+
+# Ignore development files
+.env
+README.md
+Dockerfile.demo
+
+# Ignore system files
+.git
+.vscode

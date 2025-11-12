@@ -1,0 +1,34 @@
+# ----------------------------------------
+# SIMPLE DOCKERFILE (Not Optimized)
+# ----------------------------------------
+
+# Base image: Use a Node.js image based on Alpine (which is small)
+FROM node:22-alpine3.18
+
+# Set the working directory inside the container
+# All subsequent commands will run from /app
+WORKDIR /app
+
+# Copy package.json AND package-lock.json
+# Using 'package*.json' is a nice shorthand for this.
+COPY package*.json .
+
+# Install ALL dependencies (including devDependencies)
+# This is one reason the image will be large.
+RUN npm install
+
+# Copy the *entire* project directory into the container
+# This is bad because it copies .git, .env, etc. (unless .dockerignore is used)
+# It also breaks the build cache every time *any* file changes.
+COPY . .
+
+# Compile TypeScript to JavaScript
+# This requires devDependencies (like 'typescript') to be installed.
+RUN npm run build
+
+# Tell Docker the container will listen on port 5000
+EXPOSE 5000
+
+# The command to start the application
+# This runs 'node dist/index.js' (as defined in package.json)
+CMD [ "npm", "start" ]

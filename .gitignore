@@ -1,0 +1,7 @@
+.env
+.vscode
+dist
+redis_data
+nginx_data
+alpine_data
+node_modules
